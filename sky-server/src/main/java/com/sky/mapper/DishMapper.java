@@ -25,22 +25,17 @@ public interface DishMapper {
 
     /**
      * 插入菜品数据
-     * @param dish
      */
     @AutoFill(value =  OperationType.INSERT)
     void insert(Dish dish);
 
     /**
      * 菜品查询
-     * @param dishPageQueryDTO
-     * @return
      */
     Page<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
 
     /**
      * 根据id查询菜品和对应的口味数据
-     * @param id
-     * @return
      */
     @Select("select * from dish where id = #{id}")
     Dish getById(Long id);
