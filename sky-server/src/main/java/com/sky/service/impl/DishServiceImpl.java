@@ -9,6 +9,7 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.entity.Setmeal;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
@@ -169,6 +170,38 @@ public class DishServiceImpl implements DishService {
                 .status(StatusConstant.ENABLE)
                 .build();
         return dishMapper.list(dish);
+    }
+
+    /**
+     * 启售停售菜品管理
+     */
+    /**
+     * 启售停售菜品管理
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        // 获取当前菜品对象
+        Dish dish = dishMapper.getById(id);
+        if (dish == null) {
+            throw new DeletionNotAllowedException(MessageConstant.UNKNOWN_ERROR); // 或自定义菜品不存在异常
+        }
+
+        // 停售操作：检查是否被启用状态的套餐引用
+        if (status == StatusConstant.DISABLE) {
+            // 查询所有包含此菜品的启用状态的套餐ID
+            List<Long> usingSetmealIds = setmealDishMapper.getSetmealIdsByDishIdAndStatus(id, StatusConstant.ENABLE);
+            if (!CollectionUtils.isEmpty(usingSetmealIds)) {
+                throw new DeletionNotAllowedException(MessageConstant.DISH_DISABLE_FAILED);
+            }
+        }
+
+        dish = Dish.builder()
+                .id(id)
+                .status(status)
+                .build();
+
+        // 更新菜品状态
+        dishMapper.update(dish);
     }
 
 }
