@@ -26,7 +26,7 @@ public class SetmealController {
     /**
      * 新增套餐
      */
-    @RequestMapping
+    @PostMapping
     @ApiOperation("新增套餐")
     public Result<String> save(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐");

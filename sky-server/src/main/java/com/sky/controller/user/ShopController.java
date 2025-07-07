@@ -22,9 +22,21 @@ public class ShopController {
     @GetMapping("/status")
     @ApiOperation("获取店铺营业状态")
     public Result<Integer> getStatus(){
-        Integer status = Integer.parseInt((String)redisTemplate.opsForValue().get(KEY));
-        log.info("获取到店铺营业状态为:{}",status == 1 ? "营业中" : "打烊中");
+        Object value = redisTemplate.opsForValue().get(KEY);
+        if (value == null) {
+            log.warn("Redis中未找到KEY={}, 默认返回打烊中（0）", KEY);
+            // 也可以根据业务实际返回Result.error(...)
+            return Result.success(0);
+        }
+        int status;
+        try {
+            status = Integer.parseInt(value.toString());
+        } catch (NumberFormatException e) {
+            log.error("Redis中KEY={}的值无法转换为整数: {}", KEY, value);
+            // 也可以根据业务实际返回Result.error(...)
+            return Result.success(0);
+        }
+        log.info("获取到店铺营业状态为:{}", status == 1 ? "营业中" : "打烊中");
         return Result.success(status);
     }
-
 }
