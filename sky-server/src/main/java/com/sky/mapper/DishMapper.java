@@ -68,8 +68,4 @@ public interface DishMapper {
      */
     List<Dish> list(Dish dish);
 
-    /**
-     * 修改菜品状态
-     */
-    void updateStatus(Long id, Integer status);
 }
