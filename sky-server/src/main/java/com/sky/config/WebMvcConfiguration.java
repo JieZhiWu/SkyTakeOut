@@ -1,7 +1,7 @@
 package com.sky.config;
 
-import com.sky.handler.interceptor.JwtTokenAdminInterceptor;
-import com.sky.handler.interceptor.JwtTokenUserInterceptor;
+import com.sky.interceptor.JwtTokenAdminInterceptor;
+import com.sky.interceptor.JwtTokenUserInterceptor;
 import com.sky.json.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
          * 添加用户端登录拦截器，设置拦截路径为/user/**
          */
         registry.addInterceptor(jwtTokenUserInterceptor)
-                .addPathPatterns("user/**")
+                .addPathPatterns("/user/**")
                 .excludePathPatterns("/user/user/login")
                 .excludePathPatterns("/user/shop/status");
     }
