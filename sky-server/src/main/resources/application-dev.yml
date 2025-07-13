@@ -14,7 +14,7 @@ sky:
   redis:
     host: localhost
     port: 6379
-    password:
+    password: 0993
     database: 10
   wechat:
     appid: wx84727464bcf113c6
@@ -26,3 +26,7 @@ sky:
     weChatPayCertFilePath:
     notifyUrl:
     refundNotifyUrl:
+#  shop:
+#    address: "上海"
+#  baidu:
+#    ak: 5jQ5Xjw5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x
