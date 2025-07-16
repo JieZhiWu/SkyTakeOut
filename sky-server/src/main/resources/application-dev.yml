@@ -26,7 +26,7 @@ sky:
     weChatPayCertFilePath:
     notifyUrl:
     refundNotifyUrl:
-#  shop:
-#    address: "上海"
-#  baidu:
-#    ak: 5jQ5Xjw5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x
+  shop:
+    address: 北京市海淀区上地10号
+  baidu:
+    ak: 5jQ5Xjw5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x
