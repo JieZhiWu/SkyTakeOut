@@ -114,7 +114,6 @@ public class OrderServiceImpl implements OrderService {
         //清空当前用户的购物车数据
         shoppingCartMapper.deleteByUserId(userId);
 
-/*
         // 通过WebSocket向客户端推送订单状态 type orderId content
         Map map = new HashMap();
         map.put("type", 1); //1表示来单提醒 2表示用户催单
@@ -123,7 +122,6 @@ public class OrderServiceImpl implements OrderService {
 
         String json = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(json);
-*/
 
         //封装一个OrderSubmitVO对象并返回
         return OrderSubmitVO.builder()
