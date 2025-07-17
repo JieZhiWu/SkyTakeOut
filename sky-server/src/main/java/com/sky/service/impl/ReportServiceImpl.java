@@ -6,19 +6,24 @@ import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.result.Result;
 import com.sky.service.ReportService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.SalesTop10ReportVO;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.service.WorkspaceService;
+import com.sky.vo.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.StringUtil;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,6 +41,8 @@ public class ReportServiceImpl implements ReportService {
     private OrderMapper orderMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WorkspaceService workspaceService;
 
     /**
      * 营业额统计
@@ -47,7 +54,7 @@ public class ReportServiceImpl implements ReportService {
 
         dateList.add(begin);
 
-        while (!begin.isAfter(end)) {
+        while (!begin.equals(end)) {
             //日期计算，begin加1天
             begin = begin.plusDays(1);
             dateList.add(begin);
@@ -85,7 +92,7 @@ public class ReportServiceImpl implements ReportService {
 
         dateList.add(begin);
 
-        while (!begin.isAfter(end)) {
+        while (!begin.equals(end)) {
             begin = begin.plusDays(1);
             dateList.add(begin);
         }
@@ -130,7 +137,7 @@ public class ReportServiceImpl implements ReportService {
 
         dateList.add(begin);
 
-        while (!begin.isAfter(end)) {
+        while (!begin.equals(end)) {
             begin = begin.plusDays(1);
             dateList.add(begin);
         }
@@ -203,6 +210,70 @@ public class ReportServiceImpl implements ReportService {
                 .nameList(nameList)
                 .numberList(numberList)
                 .build();
+    }
+
+    /**
+     * 导出营业数据
+     */
+    @Override
+    public void exportBusinessData(HttpServletResponse response) {
+        //1. 查询指定时间区间内的营业数据 --近30天的营业数据
+        LocalDate begin = LocalDate.now().minusDays(30);
+        LocalDate end = LocalDate.now().minusDays(1);
+
+        //查询概览数据
+        BusinessDataVO businessDataVO = workspaceService.getBusinessData(
+                LocalDateTime.of(begin, LocalTime.MIN), LocalDateTime.of(end, LocalTime.MAX));
+
+        //2. 通过POI 将查询结果封装成 Excel 中需要的数据
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
+
+        try {
+            //基于模板创建新Excel对象
+            XSSFWorkbook excel = new XSSFWorkbook(in);
+            //获取表格文件的 sheet页
+            XSSFSheet sheet = excel.getSheet("Sheet1");
+            //填充数据--时间
+            sheet.getRow(1).getCell(1).setCellValue("时间：" + begin + "至" + end);
+            //第四行
+            XSSFRow row = sheet.getRow(3);
+            row.getCell(2).setCellValue(businessDataVO.getTurnover());
+            row.getCell(4).setCellValue(businessDataVO.getValidOrderCount());
+            row.getCell(6).setCellValue(businessDataVO.getOrderCompletionRate());
+            //第五行
+            row = sheet.getRow(4);
+            row.getCell(2).setCellValue(businessDataVO.getNewUsers());
+            row.getCell(4).setCellValue(businessDataVO.getUnitPrice());
+
+            //填充明细数据
+            for (int i = 0; i < 30; i++){
+                LocalDate date = begin.plusDays(i);
+                //查询某一天的营业数据
+                BusinessDataVO dayBusinessDataVO = workspaceService.getBusinessData(
+                        LocalDateTime.of(date, LocalTime.MIN),
+                        LocalDateTime.of(date, LocalTime.MAX)
+                );
+                //获取某一行
+                row = sheet.getRow(7 + i);
+                row.getCell(1).setCellValue(date.toString());
+                row.getCell(2).setCellValue(dayBusinessDataVO.getTurnover());
+                row.getCell(3).setCellValue(dayBusinessDataVO.getValidOrderCount());
+                row.getCell(4).setCellValue(dayBusinessDataVO.getOrderCompletionRate());
+                row.getCell(5).setCellValue(dayBusinessDataVO.getUnitPrice());
+                row.getCell(6).setCellValue(dayBusinessDataVO.getNewUsers());
+            }
+
+            //3. 将Excel文件下载到客户端浏览器
+            ServletOutputStream out = response.getOutputStream();
+            excel.write(out);
+
+            out.close();
+            excel.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
 }
