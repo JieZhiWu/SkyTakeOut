@@ -2,23 +2,23 @@ sky:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     host: localhost
-    port: 3306
-    database: sky_take_out
-    username: root
-    password: 0993
+    port:  
+    database:  
+    username:  
+    password:  
   alioss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: LTAI5tEhBtfpgxJ3diyAkQ68
-    access-key-secret: R5on1ksfOS6VEHlFv1afhaJEqNmYje
-    bucket-name: jw-sky-take-out
+    access-key-id:  
+    access-key-secret:  
+    bucket-name:  
   redis:
     host: localhost
-    port: 6379
-    password: 0993
+    port:  
+    password:  
     database: 10
   wechat:
-    appid: wx84727464bcf113c6
-    secret: ea22df63826fa7797f9ed052fc8be4d9
+    appid:  
+    secret:  
     mchid:
     mchSerialNo :
     privateKeyFilePath:
@@ -27,6 +27,6 @@ sky:
     notifyUrl:
     refundNotifyUrl:
   shop:
-    address: 北京市海淀区上地10号
+    address:  
   baidu:
     ak: 5jQ5Xjw5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x5y5x
